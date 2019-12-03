@@ -10,6 +10,21 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
+  String btcUsdMessage = '1 BTC = ? USD';
+
+  void _getCoinData() async {
+    var coinData = await CoinData().getCoinData();
+    double btcUsdValue;
+
+    setState(() {
+      if (coinData == null) {
+        btcUsdMessage =  'Could not get data';
+        return;
+      }
+      btcUsdValue = coinData['last'];
+      btcUsdMessage =  '1 BTC = $btcUsdValue USD';
+    });
+  }
 
   DropdownButton<String> _buildDropDownButton() {
     List<DropdownMenuItem<String>> items = [];
@@ -53,6 +68,12 @@ class _PriceScreenState extends State<PriceScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _getCoinData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +94,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? USD',
+                  btcUsdMessage,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
