@@ -31,7 +31,7 @@ const List<String> cryptoList = [
   'LTC',
 ];
 
-const bitCoinAverageURL = 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BTC';
+const bitCoinAverageURL = 'https://apiv2.bitcoinaverage.com/indices/global/ticker/ETH';
 
 class CoinData {
   Future<dynamic> getCoinData(currency) async {
