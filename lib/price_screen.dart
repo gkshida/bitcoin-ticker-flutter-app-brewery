@@ -13,7 +13,7 @@ class _PriceScreenState extends State<PriceScreen> {
   String btcUsdMessage = '1 BTC = ? USD';
 
   void _getCoinData() async {
-    var coinData = await CoinData().getCoinData();
+    var coinData = await CoinData().getCoinData(selectedCurrency);
     double btcUsdValue;
 
     setState(() {
@@ -22,7 +22,7 @@ class _PriceScreenState extends State<PriceScreen> {
         return;
       }
       btcUsdValue = coinData['last'];
-      btcUsdMessage =  '1 BTC = $btcUsdValue USD';
+      btcUsdMessage =  '1 BTC = $btcUsdValue $selectedCurrency';
     });
   }
 
@@ -44,6 +44,7 @@ class _PriceScreenState extends State<PriceScreen> {
       onChanged: (value) {
         setState(() {
           selectedCurrency = value;
+          _getCoinData();
         });
       },
     );
