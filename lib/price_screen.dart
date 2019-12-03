@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:bitcoin_ticker/coin_data.dart';
+import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -10,7 +11,7 @@ class PriceScreen extends StatefulWidget {
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
 
-  List<DropdownMenuItem<String>> _buildDropDownItems() {
+  DropdownButton<String> _buildDropDownButton() {
     List<DropdownMenuItem<String>> items = [];
 
     for (String currency in currenciesList) {
@@ -22,10 +23,18 @@ class _PriceScreenState extends State<PriceScreen> {
       );
     }
 
-    return items;
+    return DropdownButton<String>(
+      value: selectedCurrency,
+      items: items,
+      onChanged: (value) {
+        setState(() {
+          selectedCurrency = value;
+        });
+      },
+    );
   }
 
-  List<Text> _buildPickerItems() {
+  CupertinoPicker _buildPickerItems() {
     List<Text> items = [];
 
     for (String currency in currenciesList) {
@@ -34,7 +43,13 @@ class _PriceScreenState extends State<PriceScreen> {
       );
     }
 
-    return items;
+    return CupertinoPicker(
+      itemExtent: 32.0,
+      onSelectedItemChanged: (index) {
+        print(index);
+      },
+      children: items,
+    );
   }
 
   @override
@@ -73,26 +88,11 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: CupertinoPicker(
-              itemExtent: 32.0,
-              onSelectedItemChanged: (index) {
-                print(index);
-              },
-              children: _buildPickerItems(),
-            ),
+            child:
+                Platform.isIOS ? _buildPickerItems() : _buildDropDownButton(),
           ),
         ],
       ),
     );
   }
 }
-
-// DropdownButton<String>(
-//               value: selectedCurrency,
-//               items: _buildDropDownItems(),
-//               onChanged: (value) {
-//                 setState(() {
-//                   selectedCurrency = value;
-//                 });
-//               },
-//             ),
