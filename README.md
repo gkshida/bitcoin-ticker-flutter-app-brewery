@@ -22,7 +22,7 @@ We’re going to make a crypto currency price checking app. By the end of the mo
 - [x] How to check the platform your app is being run on to customise the UI for that platform.
 - [x] Bronze Medal Challenge
 - [x] Silver Medal Challenge
-- [ ] Gold Medal Challenge
+- [x] Gold Medal Challenge
 - [ ] Revise previous concepts by completing the challenges.
 
 
