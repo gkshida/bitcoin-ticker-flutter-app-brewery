@@ -10,16 +10,20 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
-  String convertedValue = '?';
+  String convertedValueBtc = '?';
+  String convertedValueEth = '?';
+  String convertedValueLtc = '?';
 
-  void _getCoinData() async {
-    var coinData = await CoinData().getCoinData(selectedCurrency);
+  void _getCoinDatas() async {
+    List<dynamic> coinDatas = await CoinData().getCoinData(selectedCurrency);
 
     setState(() {
-      if (coinData == null) {
+      if (coinDatas == null) {
         return;
       }
-      convertedValue = coinData['last'].toString();
+      convertedValueBtc = coinDatas[0]['last'].toString();
+      convertedValueEth = coinDatas[1]['last'].toString();
+      convertedValueLtc = coinDatas[2]['last'].toString();
     });
   }
 
@@ -41,8 +45,10 @@ class _PriceScreenState extends State<PriceScreen> {
       onChanged: (value) {
         setState(() {
           selectedCurrency = value;
-          convertedValue = '?';
-          _getCoinData();
+          convertedValueBtc = '?';
+          convertedValueEth = '?';
+          convertedValueLtc = '?';
+          _getCoinDatas();
         });
       },
     );
@@ -61,46 +67,16 @@ class _PriceScreenState extends State<PriceScreen> {
       itemExtent: 32.0,
       onSelectedItemChanged: (index) {
         selectedCurrency = currenciesList[index];
-        _getCoinData();
+        _getCoinDatas();
       },
       children: items,
     );
   }
 
-  List<Card> _buildCryptoCards() {
-    List<Card> cryptoCards = [];
-
-    for (String crypto in cryptoList) {
-      cryptoCards.add(
-        Card(
-          margin: EdgeInsets.only(bottom: 18.0),
-          color: Colors.lightBlueAccent,
-          elevation: 5.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-            child: Text(
-              '1 $crypto = $convertedValue $selectedCurrency',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20.0,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return cryptoCards;
-  }
-
   @override
   void initState() {
     super.initState();
-    _getCoinData();
+    _getCoinDatas();
   }
 
   @override
@@ -117,7 +93,23 @@ class _PriceScreenState extends State<PriceScreen> {
             padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 18.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: _buildCryptoCards(),
+              children: [
+                CryptoCard(
+                  crypto: cryptoList[0],
+                  convertedValue: convertedValueBtc,
+                  selectedCurrency: selectedCurrency,
+                ),
+                CryptoCard(
+                  crypto: cryptoList[1],
+                  convertedValue: convertedValueEth,
+                  selectedCurrency: selectedCurrency,
+                ),
+                CryptoCard(
+                  crypto: cryptoList[2],
+                  convertedValue: convertedValueLtc,
+                  selectedCurrency: selectedCurrency,
+                ),
+              ],
             ),
           ),
           Container(
@@ -129,6 +121,37 @@ class _PriceScreenState extends State<PriceScreen> {
                 Platform.isIOS ? _buildPickerItems() : _buildDropDownButton(),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class CryptoCard extends StatelessWidget {
+  final String crypto;
+  final String convertedValue;
+  final String selectedCurrency;
+
+  CryptoCard({this.crypto, this.convertedValue, this.selectedCurrency});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.only(bottom: 18.0),
+      color: Colors.lightBlueAccent,
+      elevation: 5.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+        child: Text(
+          '1 $crypto = $convertedValue $selectedCurrency',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20.0,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }

@@ -31,18 +31,31 @@ const List<String> cryptoList = [
   'LTC',
 ];
 
-const bitCoinAverageURL = 'https://apiv2.bitcoinaverage.com/indices/global/ticker/ETH';
+const bitCoinAverageURL =
+    'https://apiv2.bitcoinaverage.com/indices/global/ticker/';
 
 class CoinData {
-  Future<dynamic> getCoinData(currency) async {
-    http.Response response = await http.get('$bitCoinAverageURL$currency');
+  List<Future<http.Response>> _buildCryptoFutures(String currency) {
+    List<Future<http.Response>> futures = [];
 
-    if (response.statusCode == 200) {
-      String data = response.body;
-
-      return jsonDecode(data);
-    } else {
-      print(response.statusCode);
+    for (String crypto in cryptoList) {
+      futures.add(http.get('$bitCoinAverageURL$crypto$currency'));
     }
+
+    return futures;
   }
+
+  Future<dynamic> getCoinData(String currency) async {
+    List<dynamic> datas = [];
+
+    var responses = await Future.wait(_buildCryptoFutures(currency));
+
+    for (var response in responses) {
+      String data = response.body;
+      datas.add(jsonDecode(data));
+    }
+
+    return datas;
+  }
+
 }
